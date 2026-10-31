@@ -262,6 +262,21 @@ h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:.95} a{color:inherit
     </div>
   </section>
 
+<section class="rewards" id="challengeSection">
+    <div class="reward-card" style="text-align:center">
+      <h3>📅 Daily Challenge + Streak 🔥</h3>
+      <p id="challengeText">Aaj ka challenge load ho raha hai...</p>
+      <p><strong>Streak: <span id="streakText">0 din 🔥</span></strong> — roz challenge poora karo, streak badhao, tootne mat do!</p>
+      <button class="btn btn-primary" id="challengeBtn" type="button">✅ CHALLENGE CLAIM KARO</button>
+    </div>
+    <div class="reward-card" style="text-align:center">
+      <h3>🎵 Background Music + Naye Sounds</h3>
+      <p>Halki relaxing music ke saath khelo — soap soft, clay gehra, powder fluffy, har material ki alag awaaz!</p>
+      <button class="btn btn-primary" id="musicBtn" type="button">🎵 MUSIC: OFF</button>
+      <p style="color:var(--muted)">Music sirf tab bajegi jab Sound ON ho.</p>
+    </div>
+  </section>
+
   <!-- REWARDS -->
   <section class="rewards" id="rewards">
     <div class="reward-card">
@@ -330,7 +345,13 @@ h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:.95} a{color:inherit
     {name:"Berry Hexa Crunch",desc:"Jamuni hexa — gehra rang, gehra crunch.",c1:"#E0AAFF",c2:"#7B2CBF",hp:20,pts:175,feel:"Berry Blast",shape:"hex"},
     {name:"Turquoise Donut Chalk",desc:"Beech me chhed wala donut chalk 🍩",c1:"#A7F3D0",c2:"#0FB9A3",hp:18,pts:165,feel:"Donut Dust",shape:"donut"},
     {name:"Royal Purple Pyramid",desc:"Shaahi pyramid — upar se todo!",c1:"#CDB4DB",c2:"#7C5CFF",hp:19,pts:170,feel:"Royal Crunch",shape:"triangle"},
-    {name:"Golden Treasure Block",desc:"SUNEHRA KHAZANA! Sabse zyada points ✨",c1:"#FFE66D",c2:"#FF9500",hp:24,pts:300,feel:"Golden Rich",shape:"diamond",golden:true}
+    {name:"Golden Treasure Block",desc:"SUNEHRA KHAZANA! Sabse zyada points ✨",c1:"#FFE66D",c2:"#FF9500",hp:24,pts:300,feel:"Golden Rich",shape:"diamond",golden:true},
+    {name:"Rose Soap Bar",desc:"Gulabi soap — soft squish, halki awaaz 🧼",c1:"#FFD6E0",c2:"#FF8FAB",hp:10,pts:130,feel:"Soft Squish",shape:"slab",sound:"soft"},
+    {name:"Terracotta Clay Block",desc:"Mitti ka block — gehra, bhari crush 🏺",c1:"#E8A87C",c2:"#B5651D",hp:26,pts:200,feel:"Heavy Clay",shape:"cube",sound:"squish"},
+    {name:"Red Lipstick Crush",desc:"Laal lipstick — makeup crush 💄",c1:"#FF6B81",c2:"#C9184A",hp:13,pts:160,feel:"Velvet Crush",shape:"heart",sound:"soft"},
+    {name:"Blush Powder Puff",desc:"Blush powder — halka fluffy puff 🌸",c1:"#FFC8DD",c2:"#FF5D8F",hp:11,pts:120,feel:"Fluffy Puff",shape:"circle",sound:"powder"},
+    {name:"Charcoal Soap Cube",desc:"Kala soap cube — crisp snap 🖤",c1:"#6C757D",c2:"#212529",hp:15,pts:150,feel:"Crisp Snap",shape:"cube",sound:"soft"},
+    {name:"Glitter Makeup Star",desc:"Chamak wali makeup star ✨",c1:"#FFE5EC",c2:"#FFB3C7",hp:17,pts:180,feel:"Glitter Pop",shape:"star",sound:"powder"}
   ];
   var TOOLS={hand:{dmg:1,label:"Haath"},hammer:{dmg:3,label:"Hammer"},roller:{dmg:2,label:"Roller"},drill:{dmg:5,label:"Power Drill"}};
   var LEVEL_NAMES=["Dust Starter","Dust Starter+","Crunch Expert","Powder Pro","Dust Master","Shape Hunter","Rainbow Crusher","Fever King","Golden Legend","DUST LEGEND 👑"];
@@ -358,7 +379,7 @@ h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:.95} a{color:inherit
   function ensureAudio(){ if(!state.sound)return null; if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}} if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume(); return audioCtx; }
   function tone(freq,dur,vol,type){ var ac=ensureAudio(); if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=type||"sine"; o.frequency.value=freq; g.gain.setValueAtTime(vol||.2,ac.currentTime); g.gain.exponentialRampToValueAtTime(.01,ac.currentTime+dur); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur); }
   function rewardSound(){ tone(660,.12,.22); setTimeout(function(){tone(880,.12,.22)},110); setTimeout(function(){tone(1320,.22,.24)},220); }
-  function crunchSound(power){ var ac=ensureAudio(); if(!ac)return; var dur=.12+power*.04,buffer=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate),data=buffer.getChannelData(0); for(var i=0;i<data.length;i++){data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,1.6);} var src=ac.createBufferSource(); src.buffer=buffer; var f=ac.createBiquadFilter(); f.type="bandpass"; f.frequency.value=state.tool==="hammer"||state.tool==="drill"?650+Math.random()*500:1400+Math.random()*1600; f.Q.value=.9; var g=ac.createGain(); g.gain.setValueAtTime(.55+power*.1,ac.currentTime); g.gain.exponentialRampToValueAtTime(.01,ac.currentTime+dur); src.connect(f); f.connect(g); g.connect(ac.destination); src.start(); if(power>=3){tone(90,.16,.3);} }
+  function crunchSound(power){ var ac=ensureAudio(); if(!ac)return; var dur=.12+power*.04,buffer=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate),data=buffer.getChannelData(0); for(var i=0;i<data.length;i++){data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,1.6);} var src=ac.createBufferSource(); src.buffer=buffer; var f=ac.createBiquadFilter(); f.type="bandpass"; f.frequency.value=(state.current&&state.current.sound==="squish")?300+Math.random()*250:(state.current&&state.current.sound==="soft")?2200+Math.random()*1200:(state.current&&state.current.sound==="powder")?1800+Math.random()*1400:(state.tool==="hammer"||state.tool==="drill"?650+Math.random()*500:1400+Math.random()*1600); f.Q.value=.9; var g=ac.createGain(); g.gain.setValueAtTime(.55+power*.1,ac.currentTime); g.gain.exponentialRampToValueAtTime(.01,ac.currentTime+dur); src.connect(f); f.connect(g); g.connect(ac.destination); src.start(); if(power>=3){tone(90,.16,.3);} }
   function resizeCanvas(){ var r=stage.getBoundingClientRect(); canvas.width=r.width; canvas.height=r.height; }
   window.addEventListener("resize",resizeCanvas);
   function burst(x,y,color,count,power){ var colors=[color,"#FFFFFF",state.current?state.current.c1:"#FFD48A","#FFB800"]; for(var i=0;i<count;i++){ var a=Math.random()*Math.PI*2,sp=(Math.random()*3.4+1)*(power||1); particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.7,g:.09+Math.random()*.06,life:1,decay:.011+Math.random()*.02,size:2+Math.random()*8,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*Math.PI,round:Math.random()<.4}); } }
@@ -440,7 +461,7 @@ h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:.95} a{color:inherit
       if(state.crushed%5===0){ state._chestReady=true; toast("🎁 Treasure Chest taiyaar hai — neeche jaake kholo!"); }
       var newLevel=Math.min(Math.floor(state.crushed/3)+1,10);
       if(newLevel>state.level){ state.level=newLevel; state.spinTokens+=1; showReward("🎉","Level "+state.level+" — "+LEVEL_NAMES[state.level-1]+"!","Reward: +1 Spin Token 🎡 • "+LEVEL_NEXT[state.level-2]+" Agla: "+LEVEL_NEXT[state.level-1]); if(state.level===2)toast("Hammer unlock!"); if(state.level===3)toast("Roller unlock!"); if(state.level===5)toast("Power Drill unlock!"); }
-      else if(wasBoss){ toast("👑 BOSS HARAYA! +"+bonus+" points • +"+coinGain+" coins + 100 bonus coins!"); } else toast("💥 "+cur.name+" CRUSHED! +"+bonus+" points • +"+coinGain+" coins 🪙");
+      else if(wasBoss){ state._bossBeaten=true; toast("👑 BOSS HARAYA! +"+bonus+" points • +"+coinGain+" coins + 100 bonus coins!"); } else toast("💥 "+cur.name+" CRUSHED! +"+bonus+" points • +"+coinGain+" coins 🪙");
       chalk.style.opacity=.15; checkMissions(); checkBadges(); updateUI(); setTimeout(function(){ if(state.crushed>0 && state.crushed%10===0){ spawnBoss(); } else { spawnBlock(false); } },780);
     }
     checkMissions(); checkBadges(); updateUI();
@@ -455,6 +476,18 @@ h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:.95} a{color:inherit
   $("mysteryBtn").addEventListener("click",function(){ spawnBlock(false); state.mystery=true; $("blockTitle").textContent="🎲 MYSTERY CHALK — "+state.current.name; $("blockDesc").textContent="Mystery block! Crush karo to double bonus points milenge."; $("pointsPill").textContent="Double bonus par block"; toast("🎲 Mystery Chalk aa gaya — double bonus ke liye todo!"); updateUI(); });
   $("dailyBtn").addEventListener("click",function(){ var today=new Date().toDateString(); var claimed=null; try{ claimed=localStorage.getItem("cc_daily"); }catch(e){} if(claimed===today){ toast("Aaj ka Daily Bonus pehle hi le liya hai — kal phir milega!"); return; } try{ localStorage.setItem("cc_daily",today); }catch(e){} state.score+=300; state.coins+=50; $("dailyText").textContent="Aaj ka bonus mil gaya ✓ — kal phir aana!"; showReward("🎁","Daily Bonus!","+300 points aur +50 coins mile!"); updateUI(); });
   $("timeAttackBtn").addEventListener("click",function(){ if(state.timeAttack){ toast("Time Attack pehle se chal raha hai!"); return; } state.timeAttack=true; var left=60; var startScore=state.score; $("timeAttackTimer").textContent="⏱️ "+left+" sec — DOUBLE POINTS!"; toast("⏱️ Time Attack shuru! 60 sec double points!"); clearInterval(state.taTimer); state.taTimer=setInterval(function(){ left--; $("timeAttackTimer").textContent=left>0?("⏱️ "+left+" sec — DOUBLE POINTS!"):"⏱️ Time khatam!"; if(left<=0){ clearInterval(state.taTimer); state.timeAttack=false; var gained=startScore!==undefined?(state.score-startScore):0; showReward("⏱️","Time Attack Khatam!","Is attack me +"+gained+" points banaye! Phir se khelna ho to dobara shuru karo."); $("timeAttackTimer").textContent="⏱️ 60 sec"; updateUI(); } },1000); });
+  var CHALLENGES=[
+    {text:"Aaj 15 blocks crush karo", check:function(){return state.crushed>=15}, prog:function(){return Math.min(state.crushed,15)+"/15 blocks"}},
+    {text:"Aaj Combo x5 tak pahuncho", check:function(){return state.maxCombo>=5}, prog:function(){return "Best combo x"+state.maxCombo+" / x5"}},
+    {text:"Aaj 5 alag types collect karo", check:function(){return Object.keys(state.collected).length>=5}, prog:function(){return Object.keys(state.collected).length+"/5 types"}},
+    {text:"Aaj Level 3 tak pahuncho", check:function(){return state.level>=3}, prog:function(){return "Level "+state.level+" / 3"}},
+    {text:"Aaj 1 Boss Block harao", check:function(){return !!state._bossBeaten}, prog:function(){return state._bossBeaten?"Boss haraya ✓":"Boss abhi baki hai"}}
+  ];
+  function todayChallenge(){ var d=new Date(); var day=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); return CHALLENGES[day % CHALLENGES.length]; }
+  function updateChallengeUI(){ var ch=todayChallenge(); $("challengeText").textContent="Aaj ka challenge: "+ch.text+" ("+ch.prog()+")"; var streak=0; try{ streak=parseInt(localStorage.getItem("cc_streak")||"0",10)||0; }catch(e){} $("streakText").textContent=streak+" din 🔥"; }
+  $("challengeBtn").addEventListener("click",function(){ var ch=todayChallenge(); var today=new Date().toDateString(); var claimed=null; try{ claimed=localStorage.getItem("cc_challenge"); }catch(e){} if(claimed===today){ toast("Aaj ka challenge pehle hi claim kar liya hai!"); return; } if(!ch.check()){ toast("Challenge abhi poora nahi hua — "+ch.prog()); return; } try{ localStorage.setItem("cc_challenge",today); var last=localStorage.getItem("cc_streak_date"); var streak=parseInt(localStorage.getItem("cc_streak")||"0",10)||0; var y=new Date(); y.setDate(y.getDate()-1); if(last===y.toDateString()){ streak+=1; } else if(last!==today){ streak=1; } localStorage.setItem("cc_streak",String(streak)); localStorage.setItem("cc_streak_date",today); }catch(e){} state.score+=500; state.coins+=100; showReward("📅","Daily Challenge Pura!","+500 points aur +100 coins! Streak jaari rakho 🔥"); updateChallengeUI(); updateUI(); });
+  $("musicBtn").addEventListener("click",function(){ state.music=!state.music; $("musicBtn").textContent=state.music?"🎵 MUSIC: ON":"🎵 MUSIC: OFF"; if(state.music){ if(!state.sound){ toast("Pehle Sound ON karo, phir music bajega."); } var notes=[523,587,659,784,880,784,659,587]; var i=0; clearInterval(state.musicTimer); state.musicTimer=setInterval(function(){ if(!state.music||!state.sound)return; tone(notes[i%notes.length],1.2,.06,"triangle"); i++; },1600); toast("🎵 Music ON — relaxing tones!"); } else { clearInterval(state.musicTimer); toast("Music OFF"); } });
+  var _origUpdateUI = updateUI; updateUI = function(){ _origUpdateUI(); try{ updateChallengeUI(); }catch(e){} };
   function toggleSound(){ state.sound=!state.sound; $("soundToggleTop").textContent=state.sound?"🔊 Sound: ON":"🔇 Sound: OFF"; toast(state.sound?"Sound ON":"Sound OFF"); if(state.sound)ensureAudio(); }
   $("soundBtn").addEventListener("click",toggleSound); $("soundToggleTop").addEventListener("click",toggleSound);
   $("newBlockBtn").addEventListener("click",function(){spawnBlock(false);toast("Naya shape aa gaya!")});
